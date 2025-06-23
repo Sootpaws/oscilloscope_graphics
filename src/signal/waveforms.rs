@@ -7,7 +7,7 @@ pub struct Square {
 }
 
 impl Square {
-    pub fn new(frequency: f32) -> Box<Square> {
+    pub fn new(frequency: f32) -> Box<Self> {
         Box::new(Square {
             frequency,
             time: 0.0,
@@ -21,5 +21,20 @@ impl Signal for Square {
         let phase = (self.time * self.frequency).fract().round();
         let value = phase * 2.0 - 1.0;
         (value, value)
+    }
+}
+
+/// Always zero
+pub struct Silence;
+
+impl Silence {
+    pub fn new() -> Box<Self> {
+        Box::new(Self)
+    }
+}
+
+impl Signal for Silence {
+    fn generate(&mut self) -> (f32, f32) {
+        (0.0, 0.0)
     }
 }

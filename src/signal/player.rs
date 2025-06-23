@@ -1,13 +1,16 @@
-use crate::signal::{SAMPLE_RATE, Signal};
+use crate::signal::{SAMPLE_RATE, Signal, waveforms::Silence};
 use cpal::traits::{DeviceTrait, HostTrait, StreamTrait};
+use std::sync::mpsc;
 
 /// Signal output thread
 pub struct Player {
     stream: cpal::Stream,
+    comm: mpsc::Sender<Box<dyn Signal>>,
 }
 
 impl Player {
-    pub fn play(mut signal: Box<dyn Signal>) -> Self {
+    pub fn new() -> Self {
+        let (comm, recv) = mpsc::channel();
         let host = cpal::default_host();
         let device = host
             .default_output_device()
@@ -17,10 +20,14 @@ impl Player {
             sample_rate: cpal::SampleRate(SAMPLE_RATE),
             buffer_size: cpal::BufferSize::Default,
         };
+        let mut signal: Box<dyn Signal> = Silence::new();
         let stream = device
             .build_output_stream(
                 &config,
                 move |data: &mut [f32], _: &cpal::OutputCallbackInfo| {
+                    if let Ok(new_signal) = recv.try_recv() {
+                        signal = new_signal;
+                    }
                     let mut sample_gen = (0.0, 0.0);
                     let mut gen_next = true;
                     for sample_out in data.iter_mut() {
@@ -44,6 +51,10 @@ impl Player {
             )
             .expect("Failed to create audio output stream");
         stream.play().expect("Failed to play audio output stream");
-        Self { stream }
+        Self { stream, comm }
+    }
+
+    pub fn play(&mut self, signal: Box<dyn Signal>) {
+        self.comm.send(signal).unwrap();
     }
 }
