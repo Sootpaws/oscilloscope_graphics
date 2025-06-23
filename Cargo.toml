@@ -1,0 +1,8 @@
+[package]
+name = "oscilli_disp"
+version = "0.1.0"
+description = "Control oscilliscope XY displays using audio signals"
+edition = "2024"
+
+[dependencies]
+cpal = "0.15.3"
