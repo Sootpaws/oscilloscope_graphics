@@ -27,13 +27,19 @@ impl Signal for Drawer {
         let line = &self.lines[self.line_index];
         let target = line[self.segment_index];
 
-        // Move bean
+        // Raw delta
         let delta_x = target.0 - self.beam_x;
         let delta_y = target.1 - self.beam_y;
-        let delta_x = delta_x.min(DRAW_RATE).max(-DRAW_RATE);
-        let delta_y = delta_y.min(DRAW_RATE).max(-DRAW_RATE);
-        self.beam_x = self.beam_x + delta_x;
-        self.beam_y = self.beam_y + delta_y;
+        // Normalize
+        let delta = (delta_x * delta_x + delta_y * delta_y).sqrt();
+        if delta != 0.0 {
+            let delta = delta / delta.min(DRAW_RATE);
+            let delta_x = delta_x / delta;
+            let delta_y = delta_y / delta;
+            // Move bean
+            self.beam_x = self.beam_x + delta_x;
+            self.beam_y = self.beam_y + delta_y;
+        }
 
         // Check for target reached
         if delta_x.abs() < DIST_THRESH && delta_y.abs() < DIST_THRESH {
@@ -57,7 +63,7 @@ impl Signal for Drawer {
 }
 
 /// Distance to move the beam each sample while drawing
-const DRAW_RATE: f32 = 0.001;
+const DRAW_RATE: f32 = 0.007;
 
 /// Distance to line endpoint at which it is considered "reached"
-const DIST_THRESH: f32 = 0.00001;
+const DIST_THRESH: f32 = 0.000001;
