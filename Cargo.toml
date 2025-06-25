@@ -5,4 +5,5 @@ description = "Control oscilliscope XY displays using audio signals"
 edition = "2024"
 
 [dependencies]
+anyhow = "1.0.98"
 cpal = "0.15.3"

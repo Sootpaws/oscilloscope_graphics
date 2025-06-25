@@ -1,6 +1,7 @@
 use crate::signal::{SAMPLE_RATE, Signal, waveforms::Silence};
 use cpal::traits::{DeviceTrait, HostTrait, StreamTrait};
 use std::sync::mpsc;
+use anyhow::{Result, anyhow};
 
 /// Signal output thread
 pub struct Player {
@@ -9,12 +10,12 @@ pub struct Player {
 }
 
 impl Player {
-    pub fn new() -> Self {
+    pub fn new() -> Result<Self> {
         let (comm, recv) = mpsc::channel();
         let host = cpal::default_host();
         let device = host
             .default_output_device()
-            .expect("No default output device");
+            .ok_or(anyhow!("No default output device"))?;
         let config = cpal::StreamConfig {
             channels: 2,
             sample_rate: cpal::SampleRate(SAMPLE_RATE),
@@ -48,10 +49,9 @@ impl Player {
                 },
                 // No timeout
                 None,
-            )
-            .expect("Failed to create audio output stream");
-        stream.play().expect("Failed to play audio output stream");
-        Self { stream, comm }
+            )?;
+        stream.play()?;
+        Ok(Self { stream, comm })
     }
 
     pub fn play(&mut self, signal: Box<dyn Signal>) {
