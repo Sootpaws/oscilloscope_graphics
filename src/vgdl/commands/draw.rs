@@ -1,26 +1,39 @@
 use crate::vgdl::{State, Lines, CommandObj, Command};
-use anyhow::Result;
+use anyhow::{Result, Context, anyhow, bail};
 use std::collections::VecDeque;
+use std::str::FromStr;
 
 #[derive(Clone)]
 pub struct Draw;
 
 impl CommandObj for Draw {
     fn run(&self, state: &mut State, args: &mut VecDeque<&str>) -> Result<Lines> {
-        let calibration = vec![
-            // Corners
-            vec![(0.0, 0.1), (0.0, 0.0), (0.1, 0.0)],
-            vec![(0.9, 0.0), (1.0, 0.0), (1.0, 0.1)],
-            vec![(0.0, 0.9), (0.0, 1.0), (0.1, 1.0)],
-            vec![(1.0, 0.9), (1.0, 1.0), (0.9, 1.0)],
-            // Center
-            vec![(0.4, 0.5), (0.6, 0.5)],
-            vec![(0.5, 0.4), (0.5, 0.6)],
-            // Axis
-            vec![(0.75, 0.55), (0.85, 0.45)], vec![(0.75, 0.45), (0.85, 0.55)],
-            vec![(0.45, 0.75), (0.5, 0.8), (0.55, 0.75)], vec![(0.5, 0.8), (0.5, 0.85)]
-        ];
-        Ok(calibration)
+        let mut out = Vec::new();
+        let mut line = Vec::new();
+        loop {
+            let next = args.pop_front()
+                .ok_or(anyhow!("Expected , ; or point"))?;
+            if next == "," || next == ";" {
+                if line.len() < 2 {
+                    bail!("Lines cannot have less than 2 points");
+                }
+                out.push(line);
+                line = Vec::new();
+                if next == ";" {
+                    if out.is_empty() {
+                        bail!("Must have at least one line to draw");
+                    }
+                    break Ok(out);
+                }
+            } else {
+                let x = next;
+                let y = args.pop_front()
+                    .ok_or(anyhow!("Expected second point"))?;
+                let x = f32::from_str(x).context("Cannot parse x coordinate")?;
+                let y = f32::from_str(y).context("Cannot parse y coordinate")?;
+                line.push((x, y));
+            }
+        }
     }
 
     fn dup(&self) -> Command {

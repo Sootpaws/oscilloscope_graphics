@@ -1,5 +1,5 @@
 use std::collections::{HashMap, VecDeque};
-use anyhow::{Result, anyhow};
+use anyhow::{Result, anyhow, bail};
 
 /// The high-level state of a VGDL environment
 pub struct State {
@@ -29,15 +29,19 @@ impl State {
 
     pub fn run(&mut self, program: &str) -> Result<Lines> {
         let mut args = program.split_ascii_whitespace().collect::<VecDeque<_>>();
-        self.exec(args)
+        let out = self.exec(&mut args)?;
+        if !args.is_empty() {
+            bail!("Extra words after running command");
+        }
+        Ok(out)
     }
 
-    fn exec(&mut self, mut args: VecDeque<&str>) -> Result<Lines> {
+    fn exec(&mut self, args: &mut VecDeque<&str>) -> Result<Lines> {
         let command = args.pop_front()
             .ok_or(anyhow!("No command to run"))?;
         let command: Command = self.env.get(command)
             .ok_or(anyhow!("Command '{}' not found", command))?
             .dup();
-        command.run(self, &mut args)
+        command.run(self, args)
     }
 }
