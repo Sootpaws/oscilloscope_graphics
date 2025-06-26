@@ -1,7 +1,6 @@
 use crate::vgdl::{Command, CommandObj, Lines, State};
 use anyhow::Result;
 use std::collections::VecDeque;
-use std::str::FromStr;
 
 #[derive(Clone)]
 pub struct Sequence;
