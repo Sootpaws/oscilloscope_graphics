@@ -24,6 +24,7 @@ impl State {
     pub fn new() -> Self {
         let mut env: HashMap<String, Command> = HashMap::new();
         env.insert("draw".to_owned(), Box::new(commands::draw::Draw));
+        env.insert("define".to_owned(), Box::new(commands::define::Define));
         Self { env }
     }
 
