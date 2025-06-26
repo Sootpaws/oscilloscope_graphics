@@ -1,5 +1,5 @@
-use crate::vgdl::{State, Lines, CommandObj, Command};
-use anyhow::{Result, Context, anyhow, bail};
+use crate::vgdl::{Command, CommandObj, Lines, State};
+use anyhow::{Context, Result, anyhow, bail};
 use std::collections::VecDeque;
 use std::str::FromStr;
 
@@ -7,12 +7,11 @@ use std::str::FromStr;
 pub struct Draw;
 
 impl CommandObj for Draw {
-    fn run(&self, state: &mut State, args: &mut VecDeque<&str>) -> Result<Lines> {
+    fn run(&self, _state: &mut State, args: &mut VecDeque<&str>) -> Result<Lines> {
         let mut out = Vec::new();
         let mut line = Vec::new();
         loop {
-            let next = args.pop_front()
-                .ok_or(anyhow!("Expected , ; or point"))?;
+            let next = args.pop_front().ok_or(anyhow!("Expected , ; or point"))?;
             if next == "," || next == ";" {
                 if line.len() < 2 {
                     bail!("Lines cannot have less than 2 points");
@@ -27,8 +26,7 @@ impl CommandObj for Draw {
                 }
             } else {
                 let x = next;
-                let y = args.pop_front()
-                    .ok_or(anyhow!("Expected second point"))?;
+                let y = args.pop_front().ok_or(anyhow!("Expected second point"))?;
                 let x = f32::from_str(x).context("Cannot parse x coordinate")?;
                 let y = f32::from_str(y).context("Cannot parse y coordinate")?;
                 line.push((x, y));

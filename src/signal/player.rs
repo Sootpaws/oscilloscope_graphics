@@ -1,7 +1,7 @@
 use crate::signal::{SAMPLE_RATE, Signal, waveforms::Silence};
+use anyhow::{Result, anyhow};
 use cpal::traits::{DeviceTrait, HostTrait, StreamTrait};
 use std::sync::mpsc;
-use anyhow::{Result, anyhow};
 
 /// Signal output thread
 pub struct Player {
@@ -22,34 +22,33 @@ impl Player {
             buffer_size: cpal::BufferSize::Default,
         };
         let mut signal: Box<dyn Signal> = Silence::new();
-        let stream = device
-            .build_output_stream(
-                &config,
-                move |data: &mut [f32], _: &cpal::OutputCallbackInfo| {
-                    if let Ok(new_signal) = recv.try_recv() {
-                        signal = new_signal;
+        let stream = device.build_output_stream(
+            &config,
+            move |data: &mut [f32], _: &cpal::OutputCallbackInfo| {
+                if let Ok(new_signal) = recv.try_recv() {
+                    signal = new_signal;
+                }
+                let mut sample_gen = (0.0, 0.0);
+                let mut gen_next = true;
+                for sample_out in data.iter_mut() {
+                    if gen_next {
+                        // Left channel
+                        sample_gen = signal.generate();
+                        *sample_out = sample_gen.0;
+                        gen_next = false;
+                    } else {
+                        // Right channel
+                        *sample_out = sample_gen.1;
+                        gen_next = true;
                     }
-                    let mut sample_gen = (0.0, 0.0);
-                    let mut gen_next = true;
-                    for sample_out in data.iter_mut() {
-                        if gen_next {
-                            // Left channel
-                            sample_gen = signal.generate();
-                            *sample_out = sample_gen.0;
-                            gen_next = false;
-                        } else {
-                            // Right channel
-                            *sample_out = sample_gen.1;
-                            gen_next = true;
-                        }
-                    }
-                },
-                move |err| {
-                    eprintln!("Audio output stream error: {err}");
-                },
-                // No timeout
-                None,
-            )?;
+                }
+            },
+            move |err| {
+                eprintln!("Audio output stream error: {err}");
+            },
+            // No timeout
+            None,
+        )?;
         stream.play()?;
         Ok(Self { stream, comm })
     }

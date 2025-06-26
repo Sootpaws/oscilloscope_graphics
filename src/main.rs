@@ -1,7 +1,7 @@
-use oscilli_disp::signal::player::Player;
-use oscilli_disp::linedraw::Drawer;
-use oscilli_disp::vgdl::State;
 use anyhow::Result;
+use oscilli_disp::linedraw::Drawer;
+use oscilli_disp::signal::player::Player;
+use oscilli_disp::vgdl::State;
 
 fn main() -> Result<()> {
     let calibration = "draw

@@ -37,8 +37,8 @@ impl Signal for Drawer {
             let delta_x = delta_x / delta;
             let delta_y = delta_y / delta;
             // Move bean
-            self.beam_x = self.beam_x + delta_x;
-            self.beam_y = self.beam_y + delta_y;
+            self.beam_x += delta_x;
+            self.beam_y += delta_y;
         }
 
         // Check for target reached
