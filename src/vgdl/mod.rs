@@ -26,6 +26,7 @@ impl State {
         env.insert("draw".to_owned(), Box::new(commands::draw::Draw));
         env.insert("define".to_owned(), Box::new(commands::define::Define));
         env.insert("sequence".to_owned(), Box::new(commands::sequence::Sequence));
+        env.insert("load".to_owned(), Box::new(commands::load::Load));
         Self { env }
     }
 
