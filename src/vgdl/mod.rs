@@ -1,5 +1,5 @@
-use anyhow::{Context, Result, anyhow, bail};
 use std::collections::{HashMap, VecDeque};
+use anyhow::{Result, anyhow, bail, Context};
 
 /// The high-level state of a VGDL environment
 pub struct State {
@@ -25,11 +25,9 @@ impl State {
         let mut env: HashMap<String, Command> = HashMap::new();
         env.insert("draw".to_owned(), Box::new(commands::draw::Draw));
         env.insert("define".to_owned(), Box::new(commands::define::Define));
-        env.insert(
-            "sequence".to_owned(),
-            Box::new(commands::sequence::Sequence),
-        );
+        env.insert("sequence".to_owned(), Box::new(commands::sequence::Sequence));
         env.insert("load".to_owned(), Box::new(commands::load::Load));
+        env.insert("scale".to_owned(), Box::new(commands::scale::Scale));
         Self { env }
     }
 
@@ -43,14 +41,12 @@ impl State {
     }
 
     fn exec(&mut self, args: &mut VecDeque<&str>) -> Result<Lines> {
-        let name = args.pop_front().ok_or(anyhow!("No command to run"))?;
-        let command: Command = self
-            .env
-            .get(name)
+        let name = args.pop_front()
+            .ok_or(anyhow!("No command to run"))?;
+        let command: Command = self.env.get(name)
             .ok_or(anyhow!("Command '{}' not found", name))?
             .dup();
-        command
-            .run(self, args)
+        command.run(self, args)
             .context(format!("In command {}", name))
     }
 }
