@@ -4,19 +4,19 @@ use std::collections::VecDeque;
 use std::str::FromStr;
 
 #[derive(Clone)]
-pub struct Scale;
+pub struct Move;
 
-impl CommandObj for Scale {
+impl CommandObj for Move {
     fn run(&self, state: &mut State, args: &mut VecDeque<&str>) -> Result<Lines> {
-        let xs = args.pop_front().ok_or(anyhow!("Expected X scale"))?;
-        let ys = args.pop_front().ok_or(anyhow!("Expected Y scale"))?;
-        let xs = f32::from_str(xs).context("Cannot parse X scale")?;
-        let ys = f32::from_str(ys).context("Cannot parse Y scale")?;
+        let xo = args.pop_front().ok_or(anyhow!("Expected X translation"))?;
+        let yo = args.pop_front().ok_or(anyhow!("Expected Y translation"))?;
+        let xo = f32::from_str(xo).context("Cannot parse X translation")?;
+        let yo = f32::from_str(yo).context("Cannot parse Y translation")?;
         Ok(state.exec(args)?
             .into_iter()
             .map(|line| line
                 .into_iter()
-                .map(|(x, y)| (x * xs, y * ys))
+                .map(|(x, y)| (x + xo, y + yo))
                 .collect()
             )
             .collect()

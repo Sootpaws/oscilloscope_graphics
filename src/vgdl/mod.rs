@@ -28,6 +28,10 @@ impl State {
         env.insert("sequence".to_owned(), Box::new(commands::sequence::Sequence));
         env.insert("load".to_owned(), Box::new(commands::load::Load));
         env.insert("scale".to_owned(), Box::new(commands::scale::Scale));
+        env.insert("move".to_owned(), Box::new(commands::movec::Move));
+        env.insert("row".to_owned(), Box::new(commands::row::Row));
+        env.insert("col".to_owned(), Box::new(commands::col::Col));
+        env.insert("text".to_owned(), Box::new(commands::text::Text));
         Self { env }
     }
 
