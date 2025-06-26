@@ -14,12 +14,10 @@ impl CommandObj for Col {
                 args.pop_front();
                 break Ok(out);
             }
-            let mut next = state.exec(args)?.into_iter()
-                .map(|line| line
-                    .into_iter()
-                    .map(|(x, y)| (x, y + offset))
-                    .collect()
-                )
+            let mut next = state
+                .exec(args)?
+                .into_iter()
+                .map(|line| line.into_iter().map(|(x, y)| (x, y + offset)).collect())
                 .collect();
             out.append(&mut next);
             offset += 2.0;
