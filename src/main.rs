@@ -6,8 +6,15 @@ use oscilli_disp::vgdl::State;
 fn main() -> Result<()> {
     let mut state = State::new();
     let mut player = Player::new()?;
-    state.run("load data")?;
-    player.play(Drawer::new(state.run("font_demo")?));
-    std::thread::sleep(std::time::Duration::from_secs_f32(100.0));
-    Ok(())
+    loop {
+        match state.run("load drawing.vgdl") {
+            Ok(lines) => {
+                if !lines.is_empty() {
+                    player.play(Drawer::new(lines));
+                }
+            }
+            Err(msg) => println!("Error: {}", msg),
+        }
+        std::thread::sleep(std::time::Duration::from_secs_f32(10.0));
+    }
 }
