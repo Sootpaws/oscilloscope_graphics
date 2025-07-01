@@ -10,10 +10,10 @@ fn main() -> Result<()> {
         match state.run("load drawing.vgdl") {
             Ok(lines) => {
                 if !lines.is_empty() {
-                    player.play(Drawer::new(lines));
+                    // player.play(Drawer::new(lines));
                 }
             }
-            Err(msg) => println!("Error: {}", msg),
+            Err(msg) => println!("Error: {:#}", msg),
         }
         std::thread::sleep(std::time::Duration::from_secs_f32(10.0));
     }

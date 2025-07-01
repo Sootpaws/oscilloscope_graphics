@@ -1,5 +1,5 @@
 use crate::vgdl::{Command, CommandObj, Lines, State};
-use anyhow::{Result, anyhow};
+use anyhow::{Result, anyhow, Context};
 use std::collections::VecDeque;
 use std::fs;
 use std::path::Path;
@@ -10,7 +10,7 @@ pub struct Load;
 impl CommandObj for Load {
     fn run(&self, state: &mut State, args: &mut VecDeque<&str>) -> Result<Lines> {
         let path = args.pop_front().ok_or(anyhow!("Expected path"))?;
-        load(path, state)
+        load(path, state).context(format!("While loading {}", path))
     }
 
     fn dup(&self) -> Command {
