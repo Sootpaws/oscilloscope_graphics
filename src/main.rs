@@ -15,6 +15,6 @@ fn main() -> Result<()> {
             }
             Err(msg) => println!("Error: {:#}", msg),
         }
-        std::thread::sleep(std::time::Duration::from_secs_f32(10.0));
+        std::thread::sleep(std::time::Duration::from_secs_f32(3.0));
     }
 }
