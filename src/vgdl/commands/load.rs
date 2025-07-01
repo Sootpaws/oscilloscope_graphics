@@ -1,5 +1,5 @@
 use crate::vgdl::{Command, CommandObj, Lines, State};
-use anyhow::{Result, anyhow, Context};
+use anyhow::{Context, Result, anyhow};
 use std::collections::VecDeque;
 use std::fs;
 use std::path::Path;

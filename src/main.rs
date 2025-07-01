@@ -10,7 +10,7 @@ fn main() -> Result<()> {
         match state.run("load drawing.vgdl") {
             Ok(lines) => {
                 if !lines.is_empty() {
-                    // player.play(Drawer::new(lines));
+                    player.play(Drawer::new(lines));
                 }
             }
             Err(msg) => println!("Error: {:#}", msg),
