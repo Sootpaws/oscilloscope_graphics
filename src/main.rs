@@ -1,7 +1,7 @@
 use anyhow::Result;
-use oscilli_disp::linedraw::Drawer;
-use oscilli_disp::signal::player::Player;
-use oscilli_disp::vgdl::State;
+use oscilloscope_graphics::linedraw::Drawer;
+use oscilloscope_graphics::signal::player::Player;
+use oscilloscope_graphics::vgdl::State;
 
 fn main() -> Result<()> {
     let mut state = State::new();

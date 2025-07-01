@@ -1,5 +1,5 @@
 [package]
-name = "oscilli_disp"
+name = "oscilloscope_graphics"
 version = "0.1.0"
 description = "Control oscilliscope XY displays using audio signals"
 edition = "2024"
